@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { QRCodeCanvas } from "qrcode.react";
 import jsQR from "jsqr";
 import { Html5Qrcode } from "html5-qrcode";
 
@@ -26,7 +26,9 @@ function App() {
       const qrUrl = new URL(data);
 
       if (qrUrl.protocol !== "upi:") {
-        setError("This QR code is not a UPI payment QR.");
+        setError(
+          "This QR code is not a UPI payment QR."
+        );
         return false;
       }
 
@@ -67,7 +69,10 @@ function App() {
 
       return true;
     } catch (error) {
-      console.error("QR parsing error:", error);
+      console.error(
+        "QR parsing error:",
+        error
+      );
 
       setError("Invalid UPI QR format.");
       return false;
@@ -88,8 +93,11 @@ function App() {
       const image = new Image();
 
       image.onload = () => {
-        const canvas = document.createElement("canvas");
-        const context = canvas.getContext("2d");
+        const canvas =
+          document.createElement("canvas");
+
+        const context =
+          canvas.getContext("2d");
 
         canvas.width = image.width;
         canvas.height = image.height;
@@ -102,12 +110,13 @@ function App() {
           image.height
         );
 
-        const imageData = context.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+        const imageData =
+          context.getImageData(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+          );
 
         const result = jsQR(
           imageData.data,
@@ -119,16 +128,22 @@ function App() {
           setError(
             "Could not detect a QR code in this image."
           );
+
           setReadingQR(false);
+
           return;
         }
 
         processQRData(result.data);
+
         setReadingQR(false);
       };
 
       image.onerror = () => {
-        setError("Could not load the selected image.");
+        setError(
+          "Could not load the selected image."
+        );
+
         setReadingQR(false);
       };
 
@@ -136,7 +151,10 @@ function App() {
     };
 
     reader.onerror = () => {
-      setError("Could not read the selected image.");
+      setError(
+        "Could not read the selected image."
+      );
+
       setReadingQR(false);
     };
 
@@ -149,7 +167,8 @@ function App() {
 
     setTimeout(async () => {
       try {
-        const scanner = new Html5Qrcode("qr-reader");
+        const scanner =
+          new Html5Qrcode("qr-reader");
 
         scannerRef.current = scanner;
 
@@ -195,7 +214,9 @@ function App() {
     try {
       if (scannerRef.current) {
         await scannerRef.current.stop();
+
         await scannerRef.current.clear();
+
         scannerRef.current = null;
       }
     } catch (error) {
@@ -227,6 +248,7 @@ function App() {
       setError(
         "Please scan or upload a valid merchant QR first."
       );
+
       return;
     }
 
@@ -237,6 +259,7 @@ function App() {
       setError(
         "Please enter a valid maximum payment chunk."
       );
+
       return;
     }
 
@@ -245,9 +268,11 @@ function App() {
         `${import.meta.env.VITE_API_URL}/api/merchants`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             merchantName,
             upiId,
@@ -264,6 +289,7 @@ function App() {
           data.message ||
             "Failed to create merchant."
         );
+
         return;
       }
 
@@ -284,41 +310,29 @@ function App() {
   };
 
   const downloadQR = () => {
-    const svg =
-      generatedQRRef.current?.querySelector("svg");
+    const canvas =
+      generatedQRRef.current;
 
-    if (!svg) {
+    if (!canvas) {
       return;
     }
 
-    const serializer =
-      new XMLSerializer();
-
-    const svgString =
-      serializer.serializeToString(svg);
-
-    const blob = new Blob(
-      [svgString],
-      {
-        type: "image/svg+xml;charset=utf-8",
-      }
-    );
-
-    const url =
-      URL.createObjectURL(blob);
+    const pngUrl =
+      canvas.toDataURL("image/png");
 
     const link =
       document.createElement("a");
 
-    link.href = url;
+    link.href = pngUrl;
+
     link.download =
-      "payslice-merchant-qr.svg";
+      "payslice-merchant-qr.png";
 
     document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 
-    URL.revokeObjectURL(url);
+    link.click();
+
+    document.body.removeChild(link);
   };
 
   return (
@@ -569,9 +583,9 @@ function App() {
 
               <div
                 className="generated-qr"
-                ref={generatedQRRef}
               >
-                <QRCodeSVG
+                <QRCodeCanvas
+                  ref={generatedQRRef}
                   value={paymentUrl}
                   size={240}
                   level="M"
