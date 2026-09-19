@@ -1,8 +1,10 @@
 # PaySlice
 
-<p align="center">
-  <img src="demo/Dashboard.png" alt="PaySlice dashboard" style="max-width: 700px; width: 100%; height: auto;" />
-</p>
+> Split a large UPI payment into smaller payments, each within a merchant-defined limit.
+
+PaySlice is a web-based UPI payment splitting prototype that helps merchants define a maximum payment chunk and lets customers split a large amount into multiple smaller UPI payments.
+
+PaySlice does not hold or process money. It generates UPI payment intents that open directly in the customer’s UPI application.
 
 <p align="center">
   <a href="https://payslice-green.vercel.app" target="_blank">
@@ -11,12 +13,6 @@
   <img src="https://img.shields.io/badge/Stack-React%20%2B%20Node.js-61DAFB?style=for-the-badge" alt="Stack" />
   <img src="https://img.shields.io/badge/Payment-UPI%20Intent-5F2EEA?style=for-the-badge" alt="UPI" />
 </p>
-
-> Split a large UPI payment into smaller payments, each within a merchant-defined limit.
-
-PaySlice is a web-based UPI payment splitting prototype that helps merchants define a maximum payment chunk and lets customers split a large amount into multiple smaller UPI payments.
-
-PaySlice does not hold or process money. It generates UPI payment intents that open directly in the customer’s UPI application.
 
 ---
 
