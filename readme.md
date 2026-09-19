@@ -1,7 +1,7 @@
 # PaySlice
 
 <p align="center">
-  <img src="demo/Dashboard.png" alt="PaySlice dashboard" width="900" />
+  <img src="demo/Dashboard.png" alt="PaySlice dashboard" style="max-width: 700px; width: 100%; height: auto;" />
 </p>
 
 <p align="center">
@@ -160,7 +160,7 @@ The following screenshots show the complete PaySlice flow, from merchant setup t
 The merchant scans or uploads an existing merchant UPI QR. PaySlice extracts the merchant details and allows the merchant to configure the maximum payment chunk.
 
 <p align="center">
-  <img src="demo/Dashboard.png" alt="Merchant details and maximum chunk" width="900" />
+  <img src="demo/Dashboard.png" alt="Merchant details and maximum chunk" style="max-width: 700px; width: 100%; height: auto;" />
 </p>
 
 ### 2. PaySlice QR Generation
@@ -168,7 +168,7 @@ The merchant scans or uploads an existing merchant UPI QR. PaySlice extracts the
 After the merchant configuration is submitted, PaySlice generates a unique customer-facing PaySlice QR.
 
 <p align="center">
-  <img src="demo/generatedQr.png" alt="PaySlice QR generation" width="700" />
+  <img src="demo/generatedQr.png" alt="PaySlice QR generation" style="max-width: 500px; width: 100%; height: auto;" />
 </p>
 
 ### 3. Customer Payment Breakdown
@@ -176,7 +176,7 @@ After the merchant configuration is submitted, PaySlice generates a unique custo
 The customer enters the total amount, and PaySlice automatically divides it into chunks based on the merchant's configured maximum.
 
 <p align="center">
-  <img src="demo/paymentbreakdown.jpg" alt="Customer payment breakdown" width="700" />
+  <img src="demo/paymentbreakdown.jpg" alt="Customer payment breakdown" style="max-width: 420px; width: 100%; height: auto;" />
 </p>
 
 Example:
@@ -195,7 +195,7 @@ Payment 3 → ₹500
 When the customer starts a payment, PaySlice invokes a UPI intent. On supported devices, the browser or OS can ask the customer which installed UPI application should handle the payment.
 
 <p align="center">
-  <img src="demo/upiIntentInvoked.jpg" alt="UPI intent app selection" width="700" />
+  <img src="demo/upiIntentInvoked.jpg" alt="UPI intent app selection" style="max-width: 380px; width: 100%; height: auto;" />
 </p>
 
 ### 5. Partial Payment Completion
@@ -203,7 +203,7 @@ When the customer starts a payment, PaySlice invokes a UPI intent. On supported 
 After individual payments are completed and manually confirmed, PaySlice marks the completed chunks and keeps the remaining payment active.
 
 <p align="center">
-  <img src="demo/partialcompletion.jpg" alt="Partial payment completion" width="700" />
+  <img src="demo/partialcompletion.jpg" alt="Partial payment completion" style="max-width: 380px; width: 100%; height: auto;" />
 </p>
 
 ### 6. Payment Completed
@@ -211,7 +211,7 @@ After individual payments are completed and manually confirmed, PaySlice marks t
 Once every chunk has been completed, PaySlice displays the final completion state.
 
 <p align="center">
-  <img src="demo/paymentcompleted.jpeg" alt="Payment completed" width="700" />
+  <img src="demo/paymentcompleted.jpeg" alt="Payment completed" style="max-width: 380px; width: 100%; height: auto;" />
 </p>
 
 ---
