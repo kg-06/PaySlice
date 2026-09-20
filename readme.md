@@ -30,10 +30,13 @@ Try the prototype here: [https://payslice-green.vercel.app](https://payslice-gre
 - Automatically extract:
   - Merchant name
   - UPI ID
-  - Merchant Category Code (MCC)
+  - Merchant Category Code (MCC), when present in the QR
+- Enter the MCC manually when the merchant QR does not contain one
+- Validate the MCC as exactly four digits before generating a payment QR
 - Configure a maximum payment chunk
 - Generate a unique PaySlice payment QR
 - Download the generated QR as a PNG
+- Prevent accidental regeneration when the merchant configuration has not changed
 
 ### Customer
 
@@ -50,6 +53,23 @@ Try the prototype here: [https://payslice-green.vercel.app](https://payslice-gre
 
 ---
 
+## Recent Updates
+
+The latest update improves merchant MCC handling and validation:
+
+- Merchant QR scanning no longer fails when the QR does not include an MCC.
+- When an MCC is missing, the merchant is prompted to enter the four-digit MCC assigned to their merchant account.
+- The MCC input accepts numeric values only and is limited to four digits.
+- Both the frontend and backend validate that the MCC is exactly four digits before a payment QR can be created.
+- The merchant preview clearly indicates whether the MCC was detected or entered manually.
+- The Generate QR button communicates whether the merchant needs to confirm a manually entered MCC and becomes `Payment QR Generated` after successful generation.
+- The generated QR is only regenerated when the merchant details or maximum payment chunk changes.
+- QR image-read errors now identify the selected file as a QR image.
+
+> The manually entered MCC must match the MCC assigned to the merchant account because it is included in the generated UPI payment intent.
+
+---
+
 ## How It Works
 
 ```text
@@ -60,6 +80,10 @@ Scan / Upload UPI QR
    │
    ▼
 Extract merchant information
+   │
+   ├── MCC detected → use detected MCC
+   │
+   └── MCC missing → merchant enters 4-digit MCC
    │
    ▼
 Set Maximum Chunk
@@ -238,7 +262,7 @@ Once every chunk has been completed, PaySlice displays the final completion stat
 ┌─────────────────────────────────────┐
 │          MongoDB Atlas              │
 │                                     │
-│    Merchant Configuration          │
+│    Merchant Configuration           │
 └─────────────────────────────────────┘
                   │
                   │ UPI Intent
@@ -539,9 +563,10 @@ http://localhost:5173
 1. Open PaySlice.
 2. Upload or scan an existing merchant UPI QR.
 3. Verify the detected merchant details.
-4. Set the maximum payment chunk.
-5. Generate the PaySlice QR.
-6. Display or download the QR.
+4. If the MCC is missing, enter the four-digit MCC assigned to the merchant account.
+5. Set the maximum payment chunk.
+6. Generate the PaySlice QR.
+7. Display or download the QR.
 
 ### Customer
 
@@ -587,10 +612,9 @@ V1 expects a merchant UPI QR containing the required UPI parameters such as:
 ```text
 pa
 pn
-mc
 ```
 
-Different QR formats may require additional handling.
+The MCC (`mc`) is used when present. If the QR does not contain an MCC, the merchant must provide the correct four-digit MCC manually. Different QR formats may require additional handling.
 
 ---
 
@@ -636,7 +660,7 @@ No unnecessary transaction database, authentication system, or complex payment i
 
 ### Use existing merchant information
 
-Instead of asking merchants to manually enter their UPI details and MCC, PaySlice extracts the information from their existing merchant UPI QR.
+Instead of asking merchants to manually enter their UPI details and MCC, PaySlice extracts the information from their existing merchant UPI QR. When the MCC is not included in the QR, the merchant can provide it manually and PaySlice validates the value before generating the payment QR.
 
 ---
 
