@@ -10,9 +10,11 @@ function App() {
   const [merchantName, setMerchantName] = useState("");
   const [upiId, setUpiId] = useState("");
   const [mcc, setMcc] = useState("");
+  const [mccDetected, setMccDetected] = useState(false);
   const [maxChunk, setMaxChunk] = useState("");
 
   const [paymentUrl, setPaymentUrl] = useState("");
+  const [generatedConfig, setGeneratedConfig] = useState(null);
 
   const [readingQR, setReadingQR] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
@@ -55,16 +57,17 @@ function App() {
         return false;
       }
 
-      if (!detectedMcc) {
-        setError(
-          "This merchant QR does not contain an MCC."
-        );
-        return false;
-      }
-
       setUpiId(detectedUpiId);
       setMerchantName(detectedMerchantName);
-      setMcc(detectedMcc);
+
+      if (detectedMcc) {
+        setMcc(detectedMcc);
+        setMccDetected(true);
+      } else {
+        setMcc("");
+        setMccDetected(false);
+      }
+
       setError("");
 
       return true;
@@ -152,7 +155,7 @@ function App() {
 
     reader.onerror = () => {
       setError(
-        "Could not read the selected image."
+        "Could not read the selected QR image."
       );
 
       setReadingQR(false);
@@ -246,7 +249,15 @@ function App() {
 
     if (!merchantName || !upiId || !mcc) {
       setError(
-        "Please scan or upload a valid merchant QR first."
+        "Please scan or upload a valid merchant QR and provide the MCC."
+      );
+
+      return;
+    }
+
+    if (!/^\d{4}$/.test(mcc)) {
+      setError(
+        "MCC must be exactly 4 digits."
       );
 
       return;
@@ -297,6 +308,13 @@ function App() {
         `${window.location.origin}/pay/${data.qrId}`;
 
       setPaymentUrl(customerUrl);
+
+      setGeneratedConfig({
+        merchantName,
+        upiId,
+        mcc,
+        maxChunk,
+      });
     } catch (error) {
       console.error(
         "Merchant creation failed:",
@@ -308,6 +326,17 @@ function App() {
       );
     }
   };
+
+  const formChanged =
+    !generatedConfig ||
+    merchantName !== generatedConfig.merchantName ||
+    upiId !== generatedConfig.upiId ||
+    mcc !== generatedConfig.mcc ||
+    maxChunk !== generatedConfig.maxChunk;
+
+  const buttonText = mccDetected
+    ? "Generate QR"
+    : "Confirm MCC & Generate QR";
 
   const downloadQR = () => {
     const canvas =
@@ -362,6 +391,7 @@ function App() {
             <div className="section-heading">
 
               <div className="heading-main">
+
                 <span className="step-number">
                   1
                 </span>
@@ -369,6 +399,7 @@ function App() {
                 <h2>
                   Connect your merchant QR
                 </h2>
+
               </div>
 
               <p>
@@ -382,11 +413,13 @@ function App() {
               <div className="qr-actions">
 
                 <label className="qr-action">
+
                   <span className="action-icon">
                     ↑
                   </span>
 
                   <span className="action-content">
+
                     <strong>
                       Upload QR
                     </strong>
@@ -394,6 +427,7 @@ function App() {
                     <small>
                       Choose an image
                     </small>
+
                   </span>
 
                   <input
@@ -405,6 +439,7 @@ function App() {
                       )
                     }
                   />
+
                 </label>
 
                 <button
@@ -412,11 +447,13 @@ function App() {
                   className="qr-action"
                   onClick={startCamera}
                 >
+
                   <span className="action-icon">
                     ⌁
                   </span>
 
                   <span className="action-content">
+
                     <strong>
                       Use Camera
                     </strong>
@@ -424,7 +461,9 @@ function App() {
                     <small>
                       Scan your QR
                     </small>
+
                   </span>
+
                 </button>
 
               </div>
@@ -461,51 +500,103 @@ function App() {
               </div>
             )}
 
-            {merchantName &&
-              upiId &&
-              mcc && (
-                <div className="merchant-preview">
+            {merchantName && upiId && (
+              <div className="merchant-preview">
 
-                  <div className="preview-header">
-                    <span className="success-dot" />
+                <div className="preview-header">
+                  <span className="success-dot" />
 
-                    <strong>
-                      Merchant detected
-                    </strong>
-                  </div>
+                  <strong>
+                    Merchant detected
+                  </strong>
+                </div>
 
+                <div className="preview-row">
+
+                  <span>
+                    Business
+                  </span>
+
+                  <strong>
+                    {merchantName}
+                  </strong>
+
+                </div>
+
+                <div className="preview-row">
+
+                  <span>
+                    UPI ID
+                  </span>
+
+                  <strong>
+                    {upiId}
+                  </strong>
+
+                </div>
+
+                {mccDetected ? (
                   <div className="preview-row">
+
                     <span>
-                      Business
-                    </span>
-
-                    <strong>
-                      {merchantName}
-                    </strong>
-                  </div>
-
-                  <div className="preview-row">
-                    <span>
-                      UPI ID
-                    </span>
-
-                    <strong>
-                      {upiId}
-                    </strong>
-                  </div>
-
-                  <div className="preview-row">
-                    <span>
-                      Category
+                      Merchant Category Code
                     </span>
 
                     <strong>
                       MCC {mcc}
                     </strong>
-                  </div>
 
-                </div>
-              )}
+                  </div>
+                ) : (
+                  <div className="mcc-missing">
+
+                    <strong>
+                      MCC not detected
+                    </strong>
+
+                    <span>
+                      This QR does not contain an MCC.
+                      Enter the 4-digit MCC assigned
+                      to your merchant account.
+                    </span>
+
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength="4"
+                      placeholder="e.g. 5411"
+                      value={mcc}
+                      onChange={(e) =>
+                        setMcc(
+                          e.target.value.replace(
+                            /\D/g,
+                            ""
+                          )
+                        )
+                      }
+                    />
+
+                    {mcc.length > 0 &&
+                      mcc.length < 4 && (
+                        <small>
+                          MCC must contain 4 digits.
+                        </small>
+                      )}
+
+                    {mcc.length === 4 && (
+                      <small>
+                        ✓ MCC entered. Make sure this
+                        matches the MCC assigned to
+                        your merchant account.
+                      </small>
+                    )}
+
+                  </div>
+                )}
+
+              </div>
+            )}
+
           </div>
 
           {/* Step 2 */}
@@ -515,6 +606,7 @@ function App() {
             <div className="section-heading">
 
               <div className="heading-main">
+
                 <span className="step-number">
                   2
                 </span>
@@ -522,6 +614,7 @@ function App() {
                 <h2>
                   Set payment limit
                 </h2>
+
               </div>
 
               <p>
@@ -532,6 +625,7 @@ function App() {
             </div>
 
             <div className="amount-input">
+
               <span>₹</span>
 
               <input
@@ -545,6 +639,7 @@ function App() {
                   )
                 }
               />
+
             </div>
 
           </div>
@@ -554,19 +649,23 @@ function App() {
             type="button"
             onClick={generateQR}
             disabled={
+              !formChanged ||
               !merchantName ||
               !upiId ||
-              !mcc ||
+              !/^\d{4}$/.test(mcc) ||
               !maxChunk
             }
           >
-            Create Payment QR
+            {formChanged
+              ? buttonText
+              : "Payment QR Generated"}
           </button>
 
           {paymentUrl && (
             <div className="generated-section">
 
               <div className="generated-header">
+
                 <span className="success-label">
                   READY
                 </span>
@@ -579,11 +678,13 @@ function App() {
                   Customers can scan this QR
                   to start paying.
                 </p>
+
               </div>
 
               <div
                 className="generated-qr"
               >
+
                 <QRCodeCanvas
                   ref={generatedQRRef}
                   value={paymentUrl}
@@ -591,6 +692,7 @@ function App() {
                   level="M"
                   includeMargin
                 />
+
               </div>
 
               <button

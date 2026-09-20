@@ -1205,3 +1205,44 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
+
+.mcc-missing {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid #e2e6ec;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.mcc-missing strong {
+  font-size: 14px;
+}
+
+.mcc-missing span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #64748b;
+}
+
+.mcc-missing input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #d5dbe3;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.mcc-missing input:focus {
+  border-color: #111827;
+}
+
+.mcc-missing small {
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
+}
